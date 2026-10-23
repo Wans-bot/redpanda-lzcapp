@@ -1,7 +1,7 @@
 name: Redpanda
 description: Kafka 兼容流数据平台（自带可视化 Console）
 package: cloud.lazycat.app.redpanda
-version: 26.2.2
+version: 26.2.5
 author: Redpanda Data, Inc.
 homepage: https://github.com/redpanda-data/redpanda
 icon: icon-256.png
@@ -25,14 +25,10 @@ locales:
     usage: >-
       1. Open the app to reach the Redpanda Console
 
-      2. Switch between Overview / Topics / Schema Registry / Reassign
-      Partitions views
+      2. Switch between Overview / Topics / Schema Registry / Reassign Partitions views
 
-      3. Create topics, browse partitions and messages (Data tab supports
-      offset/time search)
+      3. Create topics, browse partitions and messages (Data tab supports offset/time search)
 
-      4. Connect any Kafka client to this app's Kafka endpoint (port 9092, Kafka
-      API compatible)
+      4. Connect any Kafka client to this app's Kafka endpoint (port 9092, Kafka API compatible)
 
-      5. Use rpk or official SDKs (Python/Go/Node etc.) to produce and consume
-      messages
+      5. Use rpk or official SDKs (Python/Go/Node etc.) to produce and consume messages

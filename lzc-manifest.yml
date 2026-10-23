@@ -66,18 +66,11 @@ application:
               downloadAnchor: true
 services:
   redpanda:
-    # upstream: redpandadata/redpanda
-    image: registry.lazycat.cloud/wans/redpandadata/redpanda:e0abb44a7b2030d1
+    # upstream: docker.io/redpandadata/redpanda:v26.2.5
+    image: registry.lazycat.cloud/wans/redpandadata/redpanda:5e3a0f5ac5aba485
     user: root
     command: >-
-      redpanda start --mode dev-container --smp 1 --overprovisioned --kafka-addr
-      internal://0.0.0.0:9092 --advertise-kafka-addr
-      internal://redpanda.cloud.lazycat.app.redpanda.lzcapp:9092
-      --pandaproxy-addr internal://0.0.0.0:8082 --advertise-pandaproxy-addr
-      internal://redpanda.cloud.lazycat.app.redpanda.lzcapp:8082
-      --schema-registry-addr internal://0.0.0.0:8081 --rpc-addr 0.0.0.0:33145
-      --advertise-rpc-addr redpanda.cloud.lazycat.app.redpanda.lzcapp:33145
-      --default-log-level=info
+      redpanda start --mode dev-container --smp 1 --overprovisioned --kafka-addr internal://0.0.0.0:9092 --advertise-kafka-addr internal://redpanda.cloud.lazycat.app.redpanda.lzcapp:9092 --pandaproxy-addr internal://0.0.0.0:8082 --advertise-pandaproxy-addr internal://redpanda.cloud.lazycat.app.redpanda.lzcapp:8082 --schema-registry-addr internal://0.0.0.0:8081 --rpc-addr 0.0.0.0:33145 --advertise-rpc-addr redpanda.cloud.lazycat.app.redpanda.lzcapp:33145 --default-log-level=info
     binds:
       - /lzcapp/var/redpanda/data:/var/lib/redpanda/data
   console:
