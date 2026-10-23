@@ -1,0 +1,102 @@
+application:
+  subdomain: redpanda
+  public_path:
+    - /
+    - /assets
+  routes:
+    - /=http://console.cloud.lazycat.app.redpanda.lzcapp:8080
+  health_check:
+    test_url: http://console.cloud.lazycat.app.redpanda.lzcapp:8080/
+    start_period: 300s
+  injects:
+    - id: lazycat-file-bridge
+      'on': request
+      when:
+        - /__lazycat_file_bridge/*
+      do:
+        - src: |
+            const bridgePrefix = "/__lazycat_file_bridge";
+            const requestHost = String(ctx.request.host || "")
+              .split(":")[0]
+              .toLowerCase();
+            const firstDot = requestHost.indexOf(".");
+            const method = String(ctx.request.method || "").toUpperCase();
+
+            if (
+              firstDot <= 0 ||
+              !requestHost.endsWith(".heiyu.space") ||
+              !["GET", "HEAD", "PUT"].includes(method)
+            ) {
+              ctx.response.send(
+                ["GET", "HEAD", "PUT"].includes(method) ? 400 : 405,
+                "Invalid LazyCat file bridge request",
+              );
+              return;
+            }
+
+            const boxDomain = requestHost.slice(firstDot + 1);
+            const fileOrigin = "https://file." + boxDomain;
+            const targetPath =
+              "/files/home" + ctx.request.path.slice(bridgePrefix.length);
+
+            ctx.headers.del("Origin");
+            ctx.headers.del("Referer");
+            ctx.proxy.to(fileOrigin, {
+              path: targetPath,
+              query: ctx.request.raw_query,
+              use_target_host: true,
+              timeout_ms: 120000,
+              on_fail: "error",
+            });
+    - id: open-save-chooser
+      'on': browser
+      when:
+        - /*
+      do:
+        - src: >-
+            file:///lzcapp/pkg/content/lazycat-injects/lzc-file-chooser-inject.js
+          params:
+            diskRoot: /_lzc/files/home
+            fileBridgeRoot: /__lazycat_file_bridge
+            fallbackMime: application/octet-stream
+            locale: auto
+            hooks:
+              fileSystemAccess: true
+              fileInput: true
+              downloadAnchor: true
+services:
+  redpanda:
+    # upstream: redpandadata/redpanda
+    image: registry.lazycat.cloud/wans/redpandadata/redpanda:e0abb44a7b2030d1
+    user: root
+    command: >-
+      redpanda start --mode dev-container --smp 1 --overprovisioned --kafka-addr
+      internal://0.0.0.0:9092 --advertise-kafka-addr
+      internal://redpanda.cloud.lazycat.app.redpanda.lzcapp:9092
+      --pandaproxy-addr internal://0.0.0.0:8082 --advertise-pandaproxy-addr
+      internal://redpanda.cloud.lazycat.app.redpanda.lzcapp:8082
+      --schema-registry-addr internal://0.0.0.0:8081 --rpc-addr 0.0.0.0:33145
+      --advertise-rpc-addr redpanda.cloud.lazycat.app.redpanda.lzcapp:33145
+      --default-log-level=info
+    binds:
+      - /lzcapp/var/redpanda/data:/var/lib/redpanda/data
+  console:
+    # upstream: redpandadata/console
+    image: registry.lazycat.cloud/wans/redpandadata/console:10f3130410fe100e
+    entrypoint: /bin/sh
+    command: '-c ''echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml && exec /app/console'''
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |-
+        kafka:
+          brokers: ["redpanda.cloud.lazycat.app.redpanda.lzcapp:9092"]
+        schemaRegistry:
+          enabled: true
+          urls: ["http://redpanda.cloud.lazycat.app.redpanda.lzcapp:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda.cloud.lazycat.app.redpanda.lzcapp:9644"]
+        console:
+          topicDocumentation:
+            enabled: false

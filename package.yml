@@ -1,0 +1,38 @@
+name: Redpanda
+description: Kafka 兼容流数据平台（自带可视化 Console）
+package: cloud.lazycat.app.redpanda
+version: 26.2.2
+author: Redpanda Data, Inc.
+homepage: https://github.com/redpanda-data/redpanda
+icon: icon-256.png
+licenses:
+  - BSL-1.1
+categories:
+  - 开发者工具
+locales:
+  zh-CN:
+    name: Redpanda 流数据平台
+    description: Kafka 兼容的流数据平台，零 JVM/ZooKeeper，自带 Console 可视化界面，可管理 Topic、查看消息流、监控集群指标
+    usage: |-
+      1. 打开应用进入 Redpanda Console 界面
+      2. 顶部可切换 Overview / Topics / Schema Registry / Reassign Partitions 等视图
+      3. Topics 页点击 Create Topic 新建主题，点击主题可浏览分区、消息数据（Data 页可按 offset/时间检索）
+      4. 用任意 Kafka 客户端连接本应用的 Kafka 地址（端口 9092，兼容 Kafka API）
+      5. 开发者可安装 rpk 或使用官方 SDK（Python/Go/Node 等）生产与消费消息
+  en:
+    name: Redpanda
+    description: Kafka-compatible streaming data platform with built-in Console UI
+    usage: >-
+      1. Open the app to reach the Redpanda Console
+
+      2. Switch between Overview / Topics / Schema Registry / Reassign
+      Partitions views
+
+      3. Create topics, browse partitions and messages (Data tab supports
+      offset/time search)
+
+      4. Connect any Kafka client to this app's Kafka endpoint (port 9092, Kafka
+      API compatible)
+
+      5. Use rpk or official SDKs (Python/Go/Node etc.) to produce and consume
+      messages
